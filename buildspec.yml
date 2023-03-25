@@ -5,7 +5,7 @@ phases:
     commands:
       - aws --version
       - REPOSITORY_URI=public.ecr.aws/v0v5q4e4/aicoe-runoff-risk-image
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION
+      - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION)
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
