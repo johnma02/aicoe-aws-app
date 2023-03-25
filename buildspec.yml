@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  pre-build:
+    commands:
+      - aws --version
+      - $(aws ecr get-login --region us-east-1)
+      - REPOSITORY_URI=public.ecr.aws/v0v5q4e4/aicoe-runoff-risk-image
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  build:
+    commands:
+      - cd aicoe-app
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - printf '[{"name":"nodeapp","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      - cat imagedefinitions.json 
+  artifacts:
+    files: imagedefinitions.json
