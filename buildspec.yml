@@ -2,8 +2,6 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo "Logging in to Docker Hub"
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - echo Logging in to Amazon ECR...
       - aws --version
       - REPOSITORY_URI=public.ecr.aws/v0v5q4e4/aicoe-runoff-risk-image
