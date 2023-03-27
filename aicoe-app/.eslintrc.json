@@ -1,3 +1,18 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-extra-parens": [
+        "warn",
+        "all",
+        {
+            "nestedBinaryExpressions": false,
+            "returnAssign": false,
+            "enforceForArrowConditionals": false,
+            "ignoreJSX": "all"
+        }
+    ],
+    "brace-style": ["error", "1tbs"],
+    "indent": ["error", 4],
+    "semi": ["error", "always"]
+  }
 }
