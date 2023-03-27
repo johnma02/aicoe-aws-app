@@ -2,8 +2,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
-import Map from '../components/map';
-
+import Map from '@/components/map';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,8 +16,15 @@ export default function Home(): JSX.Element {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className={styles.main}>
-                <div className={styles.description}>
-                    <Map lattitude={39.6837} longitude={-75.7497} zoom={7}/>
+                <header className={styles.header}>University of Delaware Great Lakes Runoff Risk Predictor</header>
+                <div className={styles.grid}>
+                    <div className={styles.description}>
+                        <Map latitude={43.1031} longitude={-84.7497} zoom={5}/>
+                    </div>
+                    
+                    <div className={styles.description}>
+                        {/* TODO: Slidebar */}
+                      Hello World!</div>
                 </div>
             </main>
         </>

@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
-  padding: 6rem;
+  /* align-items: center; */
+  padding: 0rem;
   min-height: 100vh;
 }
 
@@ -41,9 +41,11 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(25%, auto));
-  width: var(--max-width);
-  max-width: 100%;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 100px;
+  max-width: 1000px;
+  text-align: center;
+  padding:4rem
 }
 
 .card {
@@ -180,9 +182,10 @@
   }
 
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: none;
+    grid-auto-flow: row;
     margin-bottom: 120px;
-    max-width: 320px;
+    max-width: 1000px;
     text-align: center;
   }
 
@@ -276,8 +279,15 @@
     transform: rotate(0deg);
   }
 }
-
-.map {
-  height: 100;
-  width: 50%;
+.header {
+  width: 100%;
+  background-color: #0a0242;
+  min-height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+  font-family: var(--font-mono);
 }

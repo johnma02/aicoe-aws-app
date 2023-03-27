@@ -1,43 +1,57 @@
-import { GoogleMap, useLoadScript } from '@react-google-maps/api';
-import { useMemo } from 'react';
+import { GoogleMap, useLoadScript, OverlayView } from '@react-google-maps/api';
 import styles from '@/styles/Home.module.css';
+import Image from 'next/image';
 
 interface MapProps{
-    lattitude: number;
+    latitude: number;
     longitude: number;
     zoom: number;
 }
 
-export default function Map({lattitude, longitude, zoom}: MapProps):JSX.Element {
-    const mapCenter = useMemo(
-        () => ({ lat:lattitude, lng: longitude }),
-        []
-    );
-    const mapOptions = useMemo<google.maps.MapOptions>(
-        () => ({
-            clickableIcons: true,
-        }),
-        []
-    );
+
+// TODO: Overlay using Google Maps API 
+
+export default function Map({latitude, longitude, zoom}: MapProps):JSX.Element {
+    const mapCenter = {
+        lat: latitude,
+        lng: longitude
+    };
+   
+    const containerStyle = {
+        width: '700px',
+        height: '700px'
+    };
     const { isLoaded } = useLoadScript({
         googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
     });
+    
     if (!isLoaded) {
         return <div>Google Maps is loading...</div>;
     }
-    console.log("FINDING: "+JSON.stringify(process.env));
     return (
         <div className={styles.homeWrapper}>
-            <div className={styles.sidebar}>
-            </div>
             <GoogleMap
-                options={mapOptions}
+                id="runoff-risk-map"
                 zoom={zoom}
                 center={mapCenter}
                 mapTypeId={google.maps.MapTypeId.ROADMAP}
-                mapContainerStyle={{ width: '800px', height: '800px' }}
+                mapContainerStyle={containerStyle}
                 onLoad={() => console.log('Google Maps component loaded')}
-            />
+            >
+                <OverlayView 
+                    position={mapCenter} 
+                    mapPaneName={OverlayView.OVERLAY_LAYER}
+                    onLoad={()=>console.log("Overlay loaded")}
+                >
+                    <div className={styles.header}>                    
+                    hello test!
+                        <Image
+                            src='/test_images/Event0_projected.png' alt='projection' fill/> 
+                    </div>
+
+                </OverlayView>
+            
+            </GoogleMap>
         </div>
     );
 }
