@@ -5,7 +5,6 @@ import styles from '@/styles/Home.module.css';
 import Map from '@/components/map';
 
 const inter = Inter({ subsets: ['latin'] });
-
 export default function Home(): JSX.Element {
     return (
         <>
@@ -20,6 +19,7 @@ export default function Home(): JSX.Element {
                 <div className={styles.grid}>
                     <div className={styles.description}>
                         <Map latitude={43.1031} longitude={-84.7497} zoom={5}/>
+                        {/* <NewMap ></NewMap> */}
                     </div>
                     
                     <div className={styles.description}>
