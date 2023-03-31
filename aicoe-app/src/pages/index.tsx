@@ -15,7 +15,7 @@ export default function Home(): JSX.Element {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className={styles.main}>
-                <header className={styles.header}>University of Delaware Great Lakes Runoff Risk Predictor</header>
+                <header className={styles.header}><h1>University of Delaware Great Lakes Runoff Risk Predictor</h1></header>
                 <div className={styles.grid}>
                     <div className={styles.description}>
                         <Map latitude={43.1031} longitude={-84.7497} zoom={5}/>

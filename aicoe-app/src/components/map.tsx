@@ -1,7 +1,7 @@
-import { GoogleMap, LoadScript, GroundOverlay, Circle } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, GroundOverlay } from '@react-google-maps/api';
 import styles from '@/styles/Home.module.css';
 import {useState, useEffect} from 'react';  
-import Image from 'next/image';
+import AWS from 'aws-sdk';
 
 interface MapProps {
   latitude: number;
@@ -11,36 +11,53 @@ interface MapProps {
 
 export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element {
     const [loaded, setLoaded] = useState<boolean>(false);
-    const [overlayLoaded, setOverlayLoaded] = useState<boolean>(false);
-    const [riskPredictions, setRiskPredictions] = useState<string>("/test_images/Event0_projected.png");
+    const [day, setDay] = useState<number>(0);
+    const [imageUrl, setImageUrl] = useState<string>("");
+    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
+    
     const mapCenter = {
         lat: latitude,
         lng: longitude
     };
 
     const containerStyle = {
-        width: '700px',
-        height: '700px'
+        width: '675px',
+        height: '675px'
     };
 
     const bounds = {
-        north: 57.150000,
-        south: 30.712216,
-        east: -64.52544,
-        west: -103.118009,
+        north: 57.05,
+        south: 30.85,
+        east: -65.5,
+        west: -102.4,
     };
- 
-    useEffect(()=> {
-        console.log("triggered re-render");
-
-    } ,[loaded]);
     
-    useEffect(()=>{
-        if(overlayLoaded){
-            console.log("components mounted: triggered re-render");
-            setLoaded(false); // Not sure why this works.
+    useEffect(() => {
+        if(loaded){
+            const s3 = new AWS.S3({
+                region: process.env.NEXT_PUBLIC_AWS_REGION as string,
+                accessKeyId: process.env.NEXT_PUBLIC_ACCESS_KEY_ID as string,
+                secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string
+            });
+        
+            const params = {
+                Bucket: process.env.NEXT_PUBLIC_S3_BUCKET as string,
+                Key: "day"+day.toString()+".png",
+            };
+
+            s3.getObject(params, (err: AWS.AWSError, data: AWS.S3.GetObjectOutput) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                const objectUrl = URL.createObjectURL(new Blob([data.Body as string]));
+                setImageUrl(objectUrl);
+                setImageLoaded(true);
+                console.log("image loaded");
+            });
         }
-    }, [overlayLoaded]);
+    }, [day, loaded]);
 
     return (
         <div className={styles.box}>
@@ -56,12 +73,11 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
                     mapContainerStyle={containerStyle}
                     onLoad={() => setLoaded(true)}
                 >
-                    {loaded && <div>
+                    {(loaded && imageLoaded) && <div>
                         <GroundOverlay
-                            url={riskPredictions}
+                            url={imageUrl}
                             bounds={bounds}
-                            onLoad={()=>setOverlayLoaded(true)}
-                            opacity={.5}
+                            opacity={.3}
                         />
                     </div>}
                 </GoogleMap>
