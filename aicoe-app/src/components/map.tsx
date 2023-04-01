@@ -1,7 +1,8 @@
 import { GoogleMap, LoadScript, GroundOverlay } from '@react-google-maps/api';
 import styles from '@/styles/Home.module.css';
-import {useState, useEffect} from 'react';  
+import {useState, useEffect, useRef} from 'react';  
 import AWS from 'aws-sdk';
+import Slidebar from '@/components/slidebar';
 
 interface MapProps {
   latitude: number;
@@ -9,12 +10,15 @@ interface MapProps {
   zoom: number;
 }
 
+interface ImageCache {
+    [key: number] : string;
+}
 export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element {
     const [loaded, setLoaded] = useState<boolean>(false);
     const [day, setDay] = useState<number>(0);
-    const [imageUrl, setImageUrl] = useState<string>("");
-    const [imageLoaded, setImageLoaded] = useState<boolean>(false);
-    
+    const [imageCache, setImageCache] = useState<ImageCache>({});
+    const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+
     const mapCenter = {
         lat: latitude,
         lng: longitude
@@ -40,48 +44,71 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
                 secretAccessKey: process.env.NEXT_PUBLIC_SECRET_ACCESS_KEY as string
             });
         
-            const params = {
-                Bucket: process.env.NEXT_PUBLIC_S3_BUCKET as string,
-                Key: "day"+day.toString()+".png",
-            };
+            const cache: ImageCache = [...Array(10).keys()]
+                .reduce((accum: ImageCache, x: number)=>{
+                    const params = {
+                        Bucket: process.env.NEXT_PUBLIC_S3_BUCKET as string,
+                        Key: "day"+x.toString()+".png",
+                    };
 
-            s3.getObject(params, (err: AWS.AWSError, data: AWS.S3.GetObjectOutput) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-
-                const objectUrl = URL.createObjectURL(new Blob([data.Body as string]));
-                setImageUrl(objectUrl);
-                setImageLoaded(true);
-                console.log("image loaded");
-            });
+                    s3.getObject(params, (err: AWS.AWSError, data: AWS.S3.GetObjectOutput) => {
+                        if (err) {
+                            console.error(err);
+                            return;
+                        }
+            
+                        const objectUrl = URL.createObjectURL(new Blob([data.Body as string]));
+                        setImageCache(prevState => ({...prevState, [x]: objectUrl}));
+                    });
+                    return accum;
+                }, []);
         }
-    }, [day, loaded]);
+    }, [loaded]);
+    
+    useEffect(() => {
+        if (Object.keys(imageCache).length === 10) {
+            setImagesLoaded(true);
+        }
+    }, [imageCache]);
 
     return (
-        <div className={styles.box}>
-            <LoadScript
-                googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
-                onLoad={() => console.log('LoadScript Ready!')}
-                onError={() => console.log('Google Maps script loading failed')}
-            >
-                <GoogleMap
-                    id="runoff-risk-map"
-                    zoom={zoom}
-                    center={mapCenter}
-                    mapContainerStyle={containerStyle}
-                    onLoad={() => setLoaded(true)}
+        <div>
+            <div className={styles.box}>
+                <LoadScript
+                    googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
+                    onLoad={() => console.log('LoadScript ready')}
+                    onError={() => console.log('Google Maps script loading failed')}
                 >
-                    {(loaded && imageLoaded) && <div>
-                        <GroundOverlay
-                            url={imageUrl}
-                            bounds={bounds}
-                            opacity={.3}
-                        />
-                    </div>}
-                </GoogleMap>
-            </LoadScript>
+                    <GoogleMap
+                        id="runoff-risk-map"
+                        zoom={zoom}
+                        center={mapCenter}
+                        mapContainerStyle={containerStyle}
+                        onLoad={() => setLoaded(true)}
+                    >
+                        {(loaded && imagesLoaded) && 
+                            <GroundOverlay
+                                url={imageCache[day]}
+                                key={day}
+                                bounds={bounds}
+                                opacity={.3}
+                                onUnmount={(groundOverlay)=> {
+                                    const mapDiv = groundOverlay.getMap()?.getDiv();
+                                    const imgsToRemove = Array.from(mapDiv?.querySelectorAll('img[src*="blob"]') ?? []);
+
+                                    imgsToRemove.forEach((node) => {
+                                        node.remove();
+                                    });
+                                    groundOverlay.setMap(null);
+                                    groundOverlay.setOpacity(0);
+                                }}
+                            />
+                                
+                        }
+                    </GoogleMap>
+                </LoadScript>
+            </div>
+            <Slidebar day={day} setDay={setDay}/>
         </div>
     );
 }
