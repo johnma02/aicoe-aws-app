@@ -1,9 +1,9 @@
-import { GoogleMap, LoadScript, GroundOverlay } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, GroundOverlayF } from '@react-google-maps/api';
 import styles from '@/styles/Home.module.css';
-import {useState, useEffect, useRef} from 'react';  
+import {useState, useEffect} from 'react';  
 import AWS from 'aws-sdk';
 import Slidebar from '@/components/slidebar';
-
+ 
 interface MapProps {
   latitude: number;
   longitude: number;
@@ -87,23 +87,11 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
                         onLoad={() => setLoaded(true)}
                     >
                         {(loaded && imagesLoaded) && 
-                            <GroundOverlay
+                            <GroundOverlayF
                                 url={imageCache[day]}
-                                key={day}
                                 bounds={bounds}
-                                opacity={.3}
-                                onUnmount={(groundOverlay)=> {
-                                    const mapDiv = groundOverlay.getMap()?.getDiv();
-                                    const imgsToRemove = Array.from(mapDiv?.querySelectorAll('img[src*="blob"]') ?? []);
-
-                                    imgsToRemove.forEach((node) => {
-                                        node.remove();
-                                    });
-                                    groundOverlay.setMap(null);
-                                    groundOverlay.setOpacity(0);
-                                }}
+                                options={{opacity:.4}}
                             />
-                                
                         }
                     </GoogleMap>
                 </LoadScript>
