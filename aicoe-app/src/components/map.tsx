@@ -8,14 +8,15 @@ interface MapProps {
   latitude: number;
   longitude: number;
   zoom: number;
+  day:number;
+  setDay: (day: number) => void; 
 }
 
 interface ImageCache {
     [key: number] : string;
 }
-export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element {
+export default function Map({latitude, longitude, zoom, day, setDay}: MapProps, ): JSX.Element {
     const [loaded, setLoaded] = useState<boolean>(false);
-    const [day, setDay] = useState<number>(0);
     const [imageCache, setImageCache] = useState<ImageCache>({});
     const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
 
@@ -89,7 +90,6 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
                     }
                 </GoogleMap>
             </LoadScript>
-            {/* <Slidebar day={day} setDay={setDay}/> */}
         </div>
     );
 }

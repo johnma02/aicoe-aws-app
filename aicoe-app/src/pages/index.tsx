@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import Map from '@/components/map';
+import { useState } from 'react';
 import { Grid } from '@chakra-ui/react';
 import {
     Table,
@@ -15,8 +16,12 @@ import {
     TableCaption,
     TableContainer,
 } from '@chakra-ui/react';
+import Slidebar from '@/components/slidebar';
+
 const inter = Inter({ subsets: ['latin'] });
+
 export default function Home(): JSX.Element {
+    const [day, setDay] = useState<number>(0);
     return (
         <>
             <Head>
@@ -27,12 +32,12 @@ export default function Home(): JSX.Element {
             </Head>
             <main className={styles.main}>
                 <Grid templateColumns='repeat(2, 1fr)' gap={0} height="100vh">
-                    <Map latitude={43.1031} longitude={-84.7497} zoom={5} />
+                    <Map latitude={43.1031} longitude={-84.7497} zoom={5} day={day} setDay={setDay} />
                     <div>
                         <div className={styles.header}>University of Delaware Runoff Risk Predictor</div>
                         <TableContainer>
                             <Table variant='simple'>
-                                <TableCaption>Predictions generated daily</TableCaption>
+                                <TableCaption>Slide the bar to select a day. Predictions are generated daily.</TableCaption>
                                 <Thead>
                                     <Tr>
                                         <Th>Date</Th>
@@ -42,32 +47,18 @@ export default function Home(): JSX.Element {
                                     </Tr>
                                 </Thead>
                                 <Tbody>
-                                    <Tr>
-                                        <Td>04/23/22</Td>
-                                        <Td>High</Td>
-                                        <Td>2 millimetres (mm)</Td>
-                                        <Td>5 millimetres (mm)</Td>
-
-                                    </Tr>
-
-                                    <Tr>
-                                        <Td>04/23/22</Td>
-                                        <Td>High</Td>
-                                        <Td>2 millimetres (mm)</Td>
-                                        <Td>5 millimetres (mm)</Td>
-
-                                    </Tr>
-
-                                    <Tr>
-                                        <Td>04/23/22</Td>
-                                        <Td>High</Td>
-                                        <Td>2 millimetres (mm)</Td>
-                                        <Td>5 millimetres (mm)</Td>
-
-                                    </Tr>
+                                    {[...Array(10).keys()].map((x) =>(
+                                        <Tr key={x}>
+                                            <Td>04/23/22</Td>
+                                            <Td>High</Td>
+                                            <Td>2 millimetres (mm)</Td>
+                                            <Td>5 millimetres (mm)</Td>
+                                        </Tr>
+                                    ))}
                                 </Tbody>
                             </Table>
                         </TableContainer>
+                        <Slidebar day={day} setDay={setDay}/>
                     </div>
                 </Grid>
             </main>
