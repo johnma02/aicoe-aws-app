@@ -3,7 +3,18 @@ import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import Map from '@/components/map';
-
+import { Grid } from '@chakra-ui/react';
+import {
+    Table,
+    Thead,
+    Tbody,
+    Tfoot,
+    Tr,
+    Th,
+    Td,
+    TableCaption,
+    TableContainer,
+} from '@chakra-ui/react';
 const inter = Inter({ subsets: ['latin'] });
 export default function Home(): JSX.Element {
     return (
@@ -15,10 +26,50 @@ export default function Home(): JSX.Element {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main className={styles.main}>
-                <header className={styles.header}><h1>University of Delaware Great Lakes Runoff Risk Predictor</h1></header>
-                <div className={styles.grid}>
+                <Grid templateColumns='repeat(2, 1fr)' gap={0} height="100vh">
                     <Map latitude={43.1031} longitude={-84.7497} zoom={5} />
-                </div>
+                    <div>
+                        <div className={styles.header}>University of Delaware Runoff Risk Predictor</div>
+                        <TableContainer>
+                            <Table variant='simple'>
+                                <TableCaption>Predictions generated daily</TableCaption>
+                                <Thead>
+                                    <Tr>
+                                        <Th>Date</Th>
+                                        <Th>Runoff Risk</Th>
+                                        <Th>Rainfall</Th>
+                                        <Th>Snowmelt</Th>
+                                    </Tr>
+                                </Thead>
+                                <Tbody>
+                                    <Tr>
+                                        <Td>04/23/22</Td>
+                                        <Td>High</Td>
+                                        <Td>2 millimetres (mm)</Td>
+                                        <Td>5 millimetres (mm)</Td>
+
+                                    </Tr>
+
+                                    <Tr>
+                                        <Td>04/23/22</Td>
+                                        <Td>High</Td>
+                                        <Td>2 millimetres (mm)</Td>
+                                        <Td>5 millimetres (mm)</Td>
+
+                                    </Tr>
+
+                                    <Tr>
+                                        <Td>04/23/22</Td>
+                                        <Td>High</Td>
+                                        <Td>2 millimetres (mm)</Td>
+                                        <Td>5 millimetres (mm)</Td>
+
+                                    </Tr>
+                                </Tbody>
+                            </Table>
+                        </TableContainer>
+                    </div>
+                </Grid>
             </main>
         </>
     );

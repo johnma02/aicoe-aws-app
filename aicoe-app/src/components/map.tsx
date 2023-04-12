@@ -24,11 +24,6 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
         lng: longitude
     };
 
-    const containerStyle = {
-        width: '675px',
-        height: '675px'
-    };
-
     const bounds = {
         north: 57.05,
         south: 30.85,
@@ -72,31 +67,29 @@ export default function Map({latitude, longitude, zoom}: MapProps): JSX.Element 
     }, [imageCache]);
 
     return (
-        <div>
-            <div className={styles.box}>
-                <LoadScript
-                    googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
-                    onLoad={() => console.log('LoadScript ready')}
-                    onError={() => console.log('Google Maps script loading failed')}
+        <div style={{width: "100%", height: "100%"}}>
+            <LoadScript
+                googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string}
+                onLoad={() => console.log('LoadScript ready')}
+                onError={() => console.log('Google Maps script loading failed')}
+            >
+                <GoogleMap
+                    id="runoff-risk-map"
+                    zoom={zoom}
+                    center={mapCenter}
+                    onLoad={() => setLoaded(true)}
+                    mapContainerStyle={{width: "100%", height: "100%"}}
                 >
-                    <GoogleMap
-                        id="runoff-risk-map"
-                        zoom={zoom}
-                        center={mapCenter}
-                        mapContainerStyle={containerStyle}
-                        onLoad={() => setLoaded(true)}
-                    >
-                        {(loaded && imagesLoaded) && 
+                    {(loaded && imagesLoaded) && 
                             <GroundOverlayF
                                 url={imageCache[day]}
                                 bounds={bounds}
                                 options={{opacity:.4}}
                             />
-                        }
-                    </GoogleMap>
-                </LoadScript>
-            </div>
-            <Slidebar day={day} setDay={setDay}/>
+                    }
+                </GoogleMap>
+            </LoadScript>
+            {/* <Slidebar day={day} setDay={setDay}/> */}
         </div>
     );
 }

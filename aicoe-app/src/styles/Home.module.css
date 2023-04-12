@@ -54,6 +54,7 @@
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   text-align: center;
+  padding: 1rem;
 }
 
 .box{
@@ -295,7 +296,7 @@
 }
 .header {
   width: 100%;
-  min-height: 20vh;
+  min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
