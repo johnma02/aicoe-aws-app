@@ -1,0 +1,5 @@
+# confidential
+/model
+# ide specific
+.DS_Store
+/.vscode
