@@ -25,11 +25,19 @@ export default function Map({latitude, longitude, zoom, day, setDay}: MapProps, 
         lng: longitude
     };
 
+    // const bounds = {
+    //     north: 57.05,
+    //     south: 30.85,
+    //     east: -65.5,
+    //     west: -102.4,
+    // };
+
+    //Web Mercator
     const bounds = {
-        north: 57.05,
-        south: 30.85,
-        east: -65.5,
-        west: -102.4,
+        north: 52.8,
+        south: 34.8,
+        east: -68.9,
+        west: -97.9,
     };
     
     useEffect(() => {
@@ -80,10 +88,12 @@ export default function Map({latitude, longitude, zoom, day, setDay}: MapProps, 
                     center={mapCenter}
                     onLoad={() => setLoaded(true)}
                     mapContainerStyle={{width: "100%", height: "100%"}}
+                    
                 >
                     {(loaded && imagesLoaded) && 
                             <GroundOverlayF
-                                url={imageCache[day]}
+                                // url={imageCache[day]}
+                                url={"/test_images/median_3857.png"}
                                 bounds={bounds}
                                 options={{opacity:.4}}
                             />
