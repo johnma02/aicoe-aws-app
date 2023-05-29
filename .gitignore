@@ -1,5 +1,6 @@
-# confidential
-/model
 # ide specific
 .DS_Store
 /.vscode
+
+# test data
+/aws-data
