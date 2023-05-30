@@ -6,17 +6,24 @@ import boto3
 def lambda_handler(event, context):
     start = time.time()
 
-    print('Predict the risk level of daily EOF runoff:')
+    print('Predicting the risk level of daily EOF runoffs:')
 
     current_path = os.getcwd()
 
-    # Step 1: prepare the input files
     # read the hourly value from the netcdf file for n days in a row
 
-    # Set the new directory path
-    new_path = "./data/"
-    start_date = datetime.date(2008, 2, 1)
-    end_date = datetime.date(2008, 2, 1)
+    start_year, start_month, start_day = int(event['start_year']), int(
+        event['start_month']), int(event['start_day'])
+
+    end_year, end_month, end_day = int(event['end_year']), int(
+        event['end_month']), int(event['end_day'])
+
+    # Set the data directory path
+    data_path = "./data/"
+
+    # For now, assume we are only working in one day intervals
+    start_date = datetime.date(start_year, start_month, start_day)
+    end_date = datetime.date(end_year, end_month, end_day)
 
     land_output = [
         f"{new_path}/{date.strftime('%Y%m%d')}.LDASOUT_DOMAIN1.nc" for date in
@@ -30,17 +37,19 @@ def lambda_handler(event, context):
          for x in range((end_date - start_date).days + 1))
     ]
 
-    # Variables in daily Land file
-    # dict_keys(['ACSNOM', 'EMISSM', 'FIRA', 'FSA', 'IRB', 'LWFORC', 'Q2MVM', 'QSNOW', 'QSNOWM', 'RAINRATE', 'SOILICEM',
-    # 'SOILSAT', 'SOILSATM', 'SOIL_TM', 'SOIL_WM', 'SWFORC', 'T2MVM', 'TGBM', 'crs', 'time', 'x', 'y'])
+    """
+    Variables in daily Land file
+    dict_keys(['ACSNOM', 'EMISSM', 'FIRA', 'FSA', 'IRB', 'LWFORC', 'Q2MVM', 'QSNOW', 'QSNOWM', 'RAINRATE', 'SOILICEM',
+    'SOILSAT', 'SOILSATM', 'SOIL_TM', 'SOIL_WM', 'SWFORC', 'T2MVM', 'TGBM', 'crs', 'time', 'x', 'y'])
 
-    # Variables in daily runoff file
-    # dict_keys(['QBDRYRT', 'QBDRYRT_2', 'QSTRMVOLRT', 'SFCHEADSUBRTM', 'SOIL_MM', 'ZWATTABLRTM', 'crs', 'qqsfc_acc', 'qqsub_acc', 'time', 'x', 'y'])
+    Variables in daily runoff file
+    dict_keys(['QBDRYRT', 'QBDRYRT_2', 'QSTRMVOLRT', 'SFCHEADSUBRTM', 'SOIL_MM', 'ZWATTABLRTM', 'crs', 'qqsfc_acc', 'qqsub_acc', 'time', 'x', 'y'])
 
-    # Variables in selected_variables_by_cluster.nc
-    # dict_keys(['time', 'x', 'y', 'ACSNOM', 'QSNOW', 'ACCPRCP'])
+    Variables in selected_variables_by_cluster.nc
+    dict_keys(['time', 'x', 'y', 'ACSNOM', 'QSNOW', 'ACCPRCP'])
 
-    # Change TGV to T2MVM, and remove SHG
+    Change TGV to T2MVM, and remove SHG
+    """
     # influential variables for each cluster
     influential_vars = {
         # 'RAINRATE', 'SFHD', 'ACSNOM', 'SOILSAT'
@@ -284,7 +293,7 @@ def lambda_handler(event, context):
     data_put = open(input_directory+'preds.nc', 'rb')
 
     s3.Bucket(
-        'aicoe-runoff-risk-netcdfs').put_object(Key="test.nc", Body=data_put)
+        'aicoe-runoff-risk-outputs').put_object(Key=start_date+".nc", Body=data_put)
 
     data_put.close()
 
