@@ -131,6 +131,7 @@ def get_daily_values(land_output, runoff_output, variables, inf_land_var, inf_ru
 
     # Fetch dates from s3
     s3 = boto3.client('s3')
+
     for fetch in inland:
         s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
 

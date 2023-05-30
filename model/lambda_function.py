@@ -26,13 +26,13 @@ def lambda_handler(event, context):
     end_date = datetime.date(end_year, end_month, end_day)
 
     land_output = [
-        f"{new_path}/{date.strftime('%Y%m%d')}.LDASOUT_DOMAIN1.nc" for date in
+        f"{data_path}/{date.strftime('%Y%m%d')}.LDASOUT_DOMAIN1.nc" for date in
         (start_date + datetime.timedelta(days=x)
          for x in range((end_date - start_date).days + 1))
     ]
 
     runoff_output = [
-        f"{new_path}/{date.strftime('%Y%m%d')}.RTOUT_DOMAIN1.nc" for date in
+        f"{data_path}/{date.strftime('%Y%m%d')}.RTOUT_DOMAIN1.nc" for date in
         (start_date + datetime.timedelta(days=x)
          for x in range((end_date - start_date).days + 1))
     ]
@@ -50,6 +50,7 @@ def lambda_handler(event, context):
 
     Change TGV to T2MVM, and remove SHG
     """
+
     # influential variables for each cluster
     influential_vars = {
         # 'RAINRATE', 'SFHD', 'ACSNOM', 'SOILSAT'
@@ -68,25 +69,30 @@ def lambda_handler(event, context):
 
         # get the influential variables
         # get() Method return the value for the given key if present in the dictionary.
+
         x = influential_vars.get(i)
+
         # Deep copy is a process in which the copying process occurs recursively.
+
         y = deepcopy(x)
         y.reverse()
         variables = y
 
-    # get the hourly model output from WRF-Hydro model runs
+        # get the hourly model output from WRF-Hydro model runs
         daily_values = get_daily_values_from_nwm(
             land_output, runoff_output, variables)
 
         # Step 2: load the statistical models and make predictions
-        # provide the path to both event and runoff prediction models (saved as a classification model, clas.joblib.dat and a regression model, reg.joblib.dat)
+        # provide the path to both event and runoff prediction models
+        # (saved as a classification model, clas.joblib.dat and a regression model, reg.joblib.dat)
+
         mod_files = file_path + 'cluster' + str(i) + '/'
 
         # predictions of occurrence and the associated probability of EOF runoff using prediction classification models, and
         # predictions of its magnitudes using the regression model
 
         predict_results = predict_runoff(mod_files, daily_values, variables)
-        # print(predict_results)
+
         predict = np.array(predict_results.variables['EVENT'])
         # save daily prediction results (event, probability and magnitude) into NetCDF format
         inputs = current_path + '/preds/p' + str(i) + '.nc'
@@ -298,4 +304,13 @@ def lambda_handler(event, context):
     data_put.close()
 
 
-lambda_handler("a", "b")
+payload = {
+    'start_year': 2022,
+    'start_month': 2,
+    'start_day': 1,
+    'end_year': 2022,
+    'end_month': 2,
+    'end_day': 1,
+}
+
+lambda_handler(payload, "b")
