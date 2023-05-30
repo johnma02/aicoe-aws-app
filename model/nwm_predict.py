@@ -129,6 +129,14 @@ def get_daily_values(land_output, runoff_output, variables, inf_land_var, inf_ru
     inland = [x for x in land_output if 'RT' not in x]
     inroute = [x for x in runoff_output if 'RT' in x]
 
+    # Fetch dates from s3
+    s3 = boto3.client('s3')
+    for fetch in inland:
+        s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
+
+    for fetch in inroute:
+        s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
+
     ds_list1 = [xr.open_dataset(file) for file in inland]
     ncland = xr.concat(ds_list1, dim='time')
     time_vals = [extract_date(file) for file in inland]
@@ -236,6 +244,7 @@ def predict_runoff(file_path, datasets, variables):
 
     # load the classification model - predict occurrence and its probabilty of the daily EOF runoff
     occ_mod_name = file_path + "clas.joblib.dat"
+
     cv_occ_mod = load(occ_mod_name)
     # print(cv_occ_mod)
 
