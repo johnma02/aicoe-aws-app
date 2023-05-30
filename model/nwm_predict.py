@@ -15,6 +15,7 @@ import time
 import re
 import os
 import pip
+import boto3
 print(__doc__)
 # importing necessary libraries
 
