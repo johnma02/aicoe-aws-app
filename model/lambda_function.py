@@ -91,7 +91,7 @@ def lambda_handler(event, context):
     # Path to prediction results
     prediction_path = current_path + '/preds/'
     # Path to cluster definition
-    cluster_file_path = current_path + '/preds/cluster_definition_1km.nc'
+    cluster_file_path = current_path + '/trained_clusters/cluster_definition_1km.nc'
 
     # Iterate through clusters
     for cluster_number in range(1, 6):
@@ -285,6 +285,8 @@ def lambda_handler(event, context):
 
     s3.Bucket(
         'aicoe-runoff-risk-netcdfs').put_object(Key="test.nc", Body=data_put)
+
     data_put.close()
+
 
 lambda_handler("a", "b")
