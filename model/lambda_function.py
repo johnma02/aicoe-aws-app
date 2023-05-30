@@ -2,6 +2,18 @@ from nwm_predict import *
 import netCDF4 as nc
 import boto3
 
+"""
+payload structure:
+payload = {
+    'start_year': 2008,
+    'start_month': 2,
+    'start_day': 1,
+    'end_year': 2008,
+    'end_month': 2,
+    'end_day': 1,
+}
+"""
+
 
 def lambda_handler(event, context):
     start = time.time()
@@ -19,7 +31,7 @@ def lambda_handler(event, context):
         event['end_month']), int(event['end_day'])
 
     # Set the data directory path
-    data_path = "./data/"
+    data_path = "data"
 
     # For now, assume we are only working in one day intervals
     start_date = datetime.date(start_year, start_month, start_day)
@@ -190,7 +202,7 @@ def lambda_handler(event, context):
 
     start = time.time()
 
-    print('Predict the risk level of daily EOF runoff based on the pre-defined risk matrix:')
+    print('Predicting risk level of daily EOF runoff based on the pre-defined risk matrix:')
 
     current_path = os.getcwd()
 
@@ -295,22 +307,14 @@ def lambda_handler(event, context):
     end = time.time()
     print("Time: {0:.4f}s".format(end - start))
 
+    print("Posting predictions to S3:")
+
     s3 = boto3.resource('s3')
     data_put = open(input_directory+'preds.nc', 'rb')
 
     s3.Bucket(
-        'aicoe-runoff-risk-outputs').put_object(Key=start_date+".nc", Body=data_put)
+        'aicoe-runoff-risk-outputs').put_object(Key=start_date.strftime('%Y%m%d')+"-preds.nc", Body=data_put)
 
     data_put.close()
 
-
-payload = {
-    'start_year': 2022,
-    'start_month': 2,
-    'start_day': 1,
-    'end_year': 2022,
-    'end_month': 2,
-    'end_day': 1,
-}
-
-lambda_handler(payload, "b")
+    print("Successfully posted predictions to S3")
