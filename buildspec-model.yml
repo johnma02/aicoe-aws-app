@@ -4,7 +4,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - REPOSITORY_URI=public.ecr.aws/v0v5q4e4/aicoe-runoff-risk-model-image
+      - REPOSITORY_URI=$MODEL_REPOSITORY_URI
       - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/v0v5q4e4
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
