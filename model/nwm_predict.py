@@ -134,6 +134,7 @@ def get_daily_values(land_output, runoff_output, variables, inf_land_var, inf_ru
 
     for fetch in inland:
         s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
+        # dev notes: s3.download_file() will not create a new directory.
 
     for fetch in inroute:
         s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)

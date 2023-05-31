@@ -9,6 +9,8 @@ RUN yum install gcc -y
 COPY requirements.txt  .
 RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
+RUN mkdir ${LAMBDA_TASK_ROOT}/data
+
 # Copy function code
 COPY lambda_function.py nwm_predict.py trained_clusters/ ${LAMBDA_TASK_ROOT}/
 
