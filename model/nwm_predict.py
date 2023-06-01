@@ -133,11 +133,17 @@ def get_daily_values(land_output, runoff_output, variables, inf_land_var, inf_ru
     s3 = boto3.client('s3')
 
     for fetch in inland:
-        s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
+        s3.download_file('aicoe-runoff-risk-variables', fetch,
+                         fetch.replace("data", "/tmp"))
         # dev notes: s3.download_file() will not create a new directory.
+        # ephemeral storage located at /tmp, alternatively, one can use io.BytesIO
 
     for fetch in inroute:
-        s3.download_file('aicoe-runoff-risk-variables', fetch, fetch)
+        s3.download_file('aicoe-runoff-risk-variables', fetch,
+                         fetch.replace("data", "/tmp"))
+
+    inland = list(map(lambda x: x.replace("data", "/tmp"), inland))
+    inroute = list(map(lambda x: x.replace("data", "/tmp"), inroute))
 
     ds_list1 = [xr.open_dataset(file) for file in inland]
     ncland = xr.concat(ds_list1, dim='time')

@@ -107,7 +107,7 @@ def lambda_handler(event, context):
 
         predict = np.array(predict_results.variables['EVENT'])
         # save daily prediction results (event, probability and magnitude) into NetCDF format
-        inputs = current_path + '/preds/p' + str(i) + '.nc'
+        inputs = '/tmp/preds/p' + str(i) + '.nc'
         save_data_to_netCDF(inputs, predict_results)
 
     # Extract the predictions of event, probability, and magnitude for each cluster
@@ -116,7 +116,7 @@ def lambda_handler(event, context):
     probability_predictions = {}
 
     # Path to prediction results
-    prediction_path = current_path + '/preds/'
+    prediction_path = '/tmp/preds/'
     # Path to cluster definition
     cluster_file_path = current_path + '/trained_clusters/cluster_definition_1km.nc'
 
@@ -184,7 +184,7 @@ def lambda_handler(event, context):
     magnitude_copy = deepcopy(magnitude)
 
     # open an existing NetCDF template
-    pd = xr.open_dataset(current_path + '/preds/p4.nc')
+    pd = xr.open_dataset('/tmp/preds/p4.nc')
 
     pd.EVENT.values = event_copy
     pd.RUNOFF.values = probability_copy
@@ -192,7 +192,7 @@ def lambda_handler(event, context):
 
     # ef = pd.transpose('time', 'y', 'x')
     ef = pd
-    ef.to_netcdf(current_path + '/preds/pF.nc')
+    ef.to_netcdf('/tmp/preds/pF.nc')
 
     end = time.time()
 
@@ -207,7 +207,7 @@ def lambda_handler(event, context):
     current_path = os.getcwd()
 
     # step 1: read the prediction for a given time period (10-day in our case)
-    input_directory = current_path + '/preds/'
+    input_directory = '/tmp/preds/'
 
     # read the saved final output file with this name
     file_path = input_directory + 'pF.nc'
