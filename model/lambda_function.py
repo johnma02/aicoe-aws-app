@@ -1,6 +1,7 @@
 from nwm_predict import *
 import netCDF4 as nc
 import boto3
+import os
 
 """
 payload structure:
@@ -76,6 +77,7 @@ def lambda_handler(event, context):
     # runoff prediction for each cluster
 
     file_path = current_path + '/trained_clusters/'
+    os.makedir('/tmp/preds')
 
     for i in range(1, 6):
 
