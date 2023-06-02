@@ -9,11 +9,6 @@ RUN yum install gcc -y
 COPY requirements.txt  .
 RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-# Create the /tmp/preds directory and change ownership and permissions
-RUN mkdir /tmp/preds && \
-    chown -R :100 /tmp/preds && \
-    chmod -R 777 /tmp/preds
-    
 # Copy function code
 COPY . ${LAMBDA_TASK_ROOT}/
 
