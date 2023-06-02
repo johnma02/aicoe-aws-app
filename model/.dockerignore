@@ -1,4 +1,3 @@
 Dockerfile
 .dockerignore
-data/
-venv/
+.gitignore
