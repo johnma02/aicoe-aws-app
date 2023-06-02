@@ -77,8 +77,9 @@ def lambda_handler(event, context):
     # runoff prediction for each cluster
 
     file_path = current_path + '/trained_clusters/'
-    os.makedir('/tmp/preds')
+    os.mkdir('/tmp/preds')
 
+    # catch is not needed, as lambda storage is ephemeral --- /preds is guaranteed to not exist
     for i in range(1, 6):
 
         # get the influential variables
