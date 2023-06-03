@@ -7,7 +7,6 @@ RUN yum install gcc -y
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 
-WORKDIR /app
 COPY requirements.txt .
 RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
