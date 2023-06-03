@@ -1,4 +1,5 @@
-FROM public.ecr.aws/lambda/python:3.9-arm64
+# Build stage
+FROM public.ecr.aws/lambda/python:3.9-arm64 AS builder
 
 # Add build tools for pip3
 RUN yum install gcc -y
@@ -6,11 +7,18 @@ RUN yum install gcc -y
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 
-COPY requirements.txt  .
+WORKDIR /app
+COPY requirements.txt .
 RUN  pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
+# Final stage
+FROM public.ecr.aws/lambda/python:3.9-arm64
+
+# Copy the built dependencies from the builder stage to ${LAMBDA_TASK_ROOT}
+COPY --from=builder "${LAMBDA_TASK_ROOT}" "${LAMBDA_TASK_ROOT}"
+
 # Copy function code
-COPY . ${LAMBDA_TASK_ROOT}/
+COPY . ${LAMBDA_TASK_ROOT}
 
 # Set the CMD to your handler (could also be done as a parameter override outside of the Dockerfile)
 CMD [ "lambda_function.lambda_handler" ]
