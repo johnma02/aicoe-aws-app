@@ -1,7 +1,5 @@
 FROM ghcr.io/lambgeo/lambda-gdal:3.6-python3.9
 
-RUN yum install gcc -y
-
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
 
